@@ -54,7 +54,7 @@
 ---
 
 ## 🔬 Tasks / Assessments Performed
-M
+
 ### 1. [Find all live hosts on the subnet using Ping Sweep]
 [Brief description of what you did and why]
 ping sweep to find all live hosts on my subnet to document which hosts are live so we can identify later any unidentifiable live hosts that I must look into.)
@@ -64,6 +64,7 @@ ping sweep to find all live hosts on my subnet to document which hosts are live 
 [sudo nmap -n --disable-arp-ping -sP 192.168.79.0/24]
 ```
 <img width="321" height="105" alt="image" src="https://github.com/user-attachments/assets/7a155223-f0bf-4037-ba05-c3272166fd92" />
+
 *-sP is what makes it considered a ping sweep*
 
 # Output
