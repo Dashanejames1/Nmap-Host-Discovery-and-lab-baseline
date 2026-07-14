@@ -1,6 +1,5 @@
 # Nmap-Host-Discovery-and-lab-baseline
 
-# Nmap-Scan-Types
 **Author:** Dashane James  
 **Lab Environment:** [e.g. VMware Workstation | Kali Linux | Metasploitable 2]  
 **Purpose:** [What is the goal of this lab/project?]  
@@ -63,9 +62,9 @@ ping sweep to find all live hosts on my subnet to document which hosts are live 
 ```bash
 # Command used
 [sudo nmap -n --disable-arp-ping -sP 192.168.79.0/24]
-*-sP is what makes it considered a ping sweep*
 ```
 <img width="321" height="105" alt="image" src="https://github.com/user-attachments/assets/7a155223-f0bf-4037-ba05-c3272166fd92" />
+*-sP is what makes it considered a ping sweep*
 
 # Output
 Command identified 3 live hosts on the subnet:
