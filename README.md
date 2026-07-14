@@ -1,15 +1,15 @@
 # Nmap-Host-Discovery-and-lab-baseline
 
 **Author:** Dashane James  
-**Lab Environment:** [e.g. VMware Workstation | Kali Linux | Metasploitable 2]  
-**Purpose:** [What is the goal of this lab/project?]  
+**Lab Environment:** [VMware Workstation | Kali Linux | Metasploitable 2]  
+**Purpose:** [To mirror the first phase of real-world penetration testing and develop practical hands-on fluency with the reconnaisance phase ]  
 **Status:** 🟢 Active / 🟡 In Progress / 🔵 Completed
 
 ---
 
 ## 📋 Overview
 
-[Write 2-3 sentences describing what this project is, what you did, and why. Example: "This repository documents a series of ______ assessments performed in an isolated VMware home lab. The goal was to build hands-on proficiency with ______ aligned with CySA+ exam objectives."]
+[Write 2-3 sentences describing what this project is, what you did, and why. Example: "This repository documents a series of ______ assessments performed in an isolated VMware home lab. The goal was to build hands-on proficiency with ______ aligned with CySA+ exam objectives."] Week 1 focuses on network discovery and reconnaisance: mapping a target environment before targeting anything else. I used several tools to practice host discovery, port scanning, and service identification while documenting a network baseline.
 
 ---
 
@@ -29,10 +29,10 @@
 
 ## 🛠️ Tools Used
 
-- **[Tool 1]** — [What it does]
-- **[Tool 2]** — [What it does]
-- **[Tool 3]** — [What it does]
-- **[Tool 4]** — [What it does]
+- **[Nmap]** — [What it does]
+- **[Wireshark]** — [What it does]
+- **[TCPDump]** — [What it does]
+- **[Netcat]** — [What it does]
 
 ---
 
