@@ -19,7 +19,7 @@
 |---|---|
 | Hypervisor | VMware Workstation (Host-Only Network) |
 | Attacker Machine | Kali Linux 2026.1 — `192.168.79.129` |
-| Target Machine | [Target name] — `192.168.79.130` |
+| Target Machine | [Metasploitable 2] — `192.168.79.130` |
 | Network Type | Host-Only (isolated, no internet exposure) |
 | Host OS | Windows 11 — ASUS Vivobook 14 |
 
