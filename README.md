@@ -9,7 +9,7 @@
 
 ## 📋 Overview
 
-[Write 2-3 sentences describing what this project is, what you did, and why. Example: "This repository documents a series of ______ assessments performed in an isolated VMware home lab. The goal was to build hands-on proficiency with ______ aligned with CySA+ exam objectives."] Week 1 focuses on network discovery and reconnaisance: mapping a target environment before targeting anything else. I used several tools to practice host discovery, port scanning, and service identification while documenting a network baseline.
+ Week 1, this repository focuses on network discovery and reconnaisance: mapping a target environment before targeting anything else. I used several tools to practice host discovery, port scanning, and service identification while documenting a network baseline.
 
 ---
 
@@ -30,9 +30,7 @@
 ## 🛠️ Tools Used
 
 - **[Nmap]** — [Scans a target to discover hosts, services, and open or closed ports.]
-- **[Wireshark]** — [What it does]
-- **[TCPDump]** — [What it does]
-- **[Netcat]** — [What it does]
+- **[Metasploitable]** — [Acts as a target machine with many intentional vulnerabilities to practice penetration testing, ethical hacking, and securely auditing safely. ]
 
 ---
 
@@ -121,11 +119,22 @@ The command to display the file that was created: cat ~/baseline.txt
 
 | Port/Service | Tool Used | Risk Level | Notes |
 |---|---|---|---|
-| [e.g. 21/tcp FTP] | [e.g. Nmap] | 🔴 Critical | [Notes] |
-| [e.g. 23/tcp Telnet] | [e.g. Wireshark] | 🔴 Critical | [Notes] |
+| [e.g. 21/tcp FTP] | [e.g. Nmap] | 🔴 Critical | [ metasploitable runs vsftpd 2.3.4, which has a wellknown backdoor vulnerability(CVE-2011-2523) which gives an attacker a root shell.] |
+| [e.g. 23/tcp Telnet] | [e.g. Nmap] | 🔴 Critical | [Sends credentials and traffic in plain text with no encryption at all.] |
+| [e.g. 445/tcp SMB] | [e.g. Nmap] | 🔴 Critical | [MB has a long history of critical exploits (e.g., EternalBlue-class vulnerabilities). Also enables enumeration of shares, users, and sometimes anonymous login.] |
+| [e.g. 139/tcp Netbios] | [e.g. Nmap] | 🔴 Critical | [often paired with SMB issues, allows enumeration of system/network info.] |
+| [e.g. 5900/tcp VNC] | [e.g. Nmap] | 🔴 Critical | [remote desktop access; Metasploitable's VNC is famously configured with a weak/no password, giving full GUI control.] |
 | [e.g. 80/tcp HTTP] | [e.g. Nikto] | 🟠 High | [Notes] |
-| [e.g. 3306/tcp MySQL] | [e.g. OpenVAS] | 🟠 High | [Notes] |
-| [e.g. 22/tcp SSH] | [e.g. Nmap] | 🟡 Medium | [Notes] |
+| [e.g. 3306/tcp MySQL & PostgreSQL] | [e.g. Nmap] | 🟠 High | [databases exposed to the network; Metasploitable's are set up with weak or default credentials, risking data exposure or command execution.] |
+| [e.g. 2049/tcp NFS] | [e.g. Nmap] | 🟠 High | [misconfigured NFS shares can allow unauthorized file access.]
+| [e.g. 111/rpcbind] | [e.g. Nmap] | 🟠 High | [rpcbind exposes RPC services that assist in enumeration/attacks.]
+| [e.g. 25/tcp SMTP] | [e.g. Nmap] | 🟡 Medium | [can allow email relay abuse or reveal system info via banner grabbing.] |
+| [e.g. 80/tcp HTTP] | [e.g. Nmap] | 🟡 Medium | Metasploitable's web apps (DVWA, Mutillidae, etc.) are intentionally full of vulnerabilities (SQLi, XSS, command injection.] |
+
+**To enumerate is to systematically query a target system or network to extract detailed, valuable information**
+What is SMB, Netbios, VNC, NFS, rpcbind ??
+
+**Good writeup structure: for each port, note the service, the specific known CVE if there is one, and the real-world remediation (patch version, disable service, enforce auth, segment network). That CVE-2011-2523 FTP backdoor is probably your strongest example to lead with — it's a textbook case and easy to explain clearly in an interview.**
 
 **Risk Levels:** 🔴 Critical | 🟠 High | 🟡 Medium | 🟢 Low
 
@@ -171,43 +180,10 @@ This lab directly maps to the following CompTIA CySA+ (CS0-003) exam domains:
 
 > [Any important notes about your lab setup, workarounds, or lessons learned. Example:
 >
-> "Always add the -n flag to Nmap scans in this VMware environment to prevent DNS resolution hangs."]
+> **"Always add the -n flag to Nmap scans in this VMware environment to prevent DNS resolution hangs."]**
 > 
-> -sP and -sT contradict eachother (Can't be used together because -sP means just do a ping/host-discovery sweep, skip ports entirely but -sT tells Nmap to do a full TCP connect port scan. These commands contradict eachother.)
-Critical well known exploitable services that are open:
-> *include these in the write up section*
-> 21- FTP - metasploitable runs vsftpd 2.3.4, which has a wellknown backdoor vulnerability(CVE-2011-2523) which gives an attacker a root shell.
-> 23 - Telnet - Sends credentials and traffic in plain text with no encryption at all.
-> 445 - SMB - Has a long history 
-> 139 - netbios-ssn -
-> 5900 - VNC
-High risk exploitable services:
-> 3306 - MySQL
-> 5432 - PostgreSQL
-> 2049 - NFS
-> 111 - rpcbind
-> 6000 - X11
-> 513/5144 - rlogin/ssh
-Moderate risks:
-> 25 - SMTP
-> 80 - HTTP
-> 8009 - ajp13
-> 2121 - ccproxy-ftp
+> **-sP and -sT contradict eachother (Can't be used together because -sP means just do a ping/host-discovery sweep, skip ports entirely but -sT tells Nmap to do a full TCP connect port scan. These commands contradict eachother.)**
 
-Ports with no modern use that should be disabled completely:
-Telnet
-513- rlogin
-514- rsh
-111- rpcbind
-6000- X11
-2121- ccproxy
-21 - FTP
-Should be disabled unless there is a documented buisness need:
-139 - SMB
-445 - NetBios
-2049 - NFS
-5900 - VNC
-8009 - Ajp13
 ```bash
 # Any important commands or workarounds
 [command here]
