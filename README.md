@@ -144,10 +144,9 @@ What is SMB, Netbios, VNC, NFS, rpcbind ??
 
 | Action Performed | ATT&CK Tactic | Technique ID | Technique Name |
 |---|---|---|---|
-| [e.g. Port scanning] | [e.g. Reconnaissance] | [e.g. T1595] | [e.g. Active Scanning] |
-| [Action] | [Tactic] | [ID] | [Technique] |
-| [Action] | [Tactic] | [ID] | [Technique] |
-| [Action] | [Tactic] | [ID] | [Technique] |
+| Ping sweep to discover live hosts | Reconnaissance | T1595.001 | Scanning IP Blocks |
+| Fast port scan of Metasploitable | Reconnaissance | T1046 | Network Service Discovery |
+| Saving scan output for later reference | Collection | T1005 | Data from Local System |
 
 ---
 
@@ -156,49 +155,50 @@ What is SMB, Netbios, VNC, NFS, rpcbind ??
 Based on findings, the following remediations would be recommended in a real environment:
 
 1. **[Metasplotable has many vulnerable ports open.]** — [Recommendation]
-2. **[Finding 2]** — [Recommendation]
-3. **[Finding 3]** — [Recommendation]
-4. **[Finding 4]** — [Recommendation]
-5. **[Finding 5]** — [Recommendation]
 
+1. **vsftpd 2.3.4 backdoor (Critical)** — Upgrade or replace immediately; this version contains a known, publicly documented backdoor (CVE-2011-2523).
+2. **Telnet enabled (Critical)** — Disable Telnet and replace with SSH for all remote administration.
+3. **SMB/NetBIOS exposed with weak configuration (Critical)** — Disable SMB/NetBIOS if not required, or restrict access via host-based firewall rules; enforce message signing where SMB is necessary.
+4. **VNC with weak/no authentication (Critical)** — Disable VNC or enforce strong authentication and tunnel access through SSH/VPN.
+5. **Databases (MySQL/PostgreSQL) exposed to the network (High)** — Restrict database access to localhost or an internal-only network segment; enforce strong credentials.
 ---
 
-## 📚 CySA+ Exam Relevance
-
-This lab directly maps to the following CompTIA CySA+ (CS0-003) exam domains:
-
-| Domain | Coverage |
-|---|---|
-| Security Operations (33%) | [What this lab covers in this domain] |
-| Vulnerability Management (30%) | [What this lab covers in this domain] |
-| Incident Response (20%) | [What this lab covers in this domain] |
-| Reporting & Communication (17%) | [What this lab covers in this domain] |
-
----
 
 ## 🔑 Technical Notes
 
-> [Any important notes about your lab setup, workarounds, or lessons learned. Example:
+# Ping sweep to find all live hosts on the subnet
+sudo nmap -n --disable-arp-ping -sP 192.168.79.0/24
+
+# Fast scan (top 100 ports) against a specific target
+sudo nmap -n --disable-arp-ping -F 192.168.79.130
+
+# Save scan output to a file for later reference
+sudo nmap -n --disable-arp-ping -F 192.168.79.130 -oN ~/baseline.txt
+
+# View a saved scan output file
+cat ~/baseline.txt
+
+# Note: ~/ is a shortcut for the home directory (e.g. /home/kali).
+# Omitting it saves the file to whatever directory you're currently in
+# instead of a predictable, consistent location.
 >
 > **"Always add the -n flag to Nmap scans in this VMware environment to prevent DNS resolution hangs."]**
 > 
 > **-sP and -sT contradict eachother (Can't be used together because -sP means just do a ping/host-discovery sweep, skip ports entirely but -sT tells Nmap to do a full TCP connect port scan. These commands contradict eachother.)**
 
-```bash
-# Any important commands or workarounds
-[command here]
-```
 
 ---
 
 ## 📌 About This Project
 
-[1-2 sentences about how this fits into your overall portfolio and career goals.]
+[This repository is the starting point of my broader cybersecurity portfolio — establishing the foundational reconnaissance and host discovery skills that every later assessment (service detection, vulnerability scanning, packet analysis, and exploitation) builds on.]
 
 **Related repositories:**
-- `[Repo Name]` — [Brief description]
-- `[Repo Name]` — [Brief description]
-- `[Repo Name]` — Coming soon
+- `Nmap-Scan-Types-SYN-vs-TCP-vs-UDP` — Compared SYN, TCP connect, and UDP scan types against the ports identified as open in this baseline
+- `Service-Version-Detection-and-OS-Fingerprinting` — Identified exact software versions on the ports found open here, and researched real CVEs tied to them
+- `Nmap-Scripting-Engine` — Used NSE scripts to detect and, in one case, actively exploit the vsftpd vulnerability first identified in this repository
+- `Wireshark-Capture-and-Analyze-Traffic` — Captured and analyzed live traffic against the same target established here
+- `TCPDump-CLI-Packet-Capture` — Captured command-line packet traffic, including a live Telnet session on a port identified as open in this baseline
 
 ---
 
