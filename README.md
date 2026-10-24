@@ -1,15 +1,17 @@
-# Nmap-Host-Discovery-and-lab-baseline
+# Nmap-Host-Discovery-and-Lab-Baseline
 
 **Author:** Dashane James  
-**Lab Environment:** VMware Workstation | Kali Linux | Metasploitable 2
-**Purpose:** To mirror the first phase of real-world penetration testing and develop practical hands-on fluency with the reconnaisance phase.
+**Lab Environment:** VMware Workstation | Kali Linux | Metasploitable 2  
+**Purpose:** Establish a documented network baseline, the foundation every later assessment in this portfolio is built on.  
 **Status:** 🔵 Completed
 
 ---
 
 ## 📋 Overview
 
-Week 1, this repository focuses on network discovery and reconnaisance. Mapping a target environment before targeting anything else. I used several tools to practice host discovery, port scanning, and service identification while documenting a network baseline.
+The first step in any security assessment is figuring out what's actually there. Before evaluating vulnerabilities or analyzing traffic, you need to map the network: identify which hosts are live, which ports are open, and save that state as a documented baseline you can refer back to.
+
+This repository covers exactly that: running a ping sweep to locate live hosts on the subnet, performing a fast Nmap scan against the target to identify open ports, and saving the output to a file. It's the starting point for the entire Week 1 reconnaissance workflow. Every subsequent lab (version detection, packet analysis, vulnerability scripting) traces back to the port list and baseline established here.
 
 ---
 
@@ -18,134 +20,80 @@ Week 1, this repository focuses on network discovery and reconnaisance. Mapping 
 | Component | Details |
 |---|---|
 | Hypervisor | VMware Workstation (Host-Only Network) |
-| Attacker Machine | Kali Linux 2026.1 — `192.168.79.129` |
-| Target Machine | Metasploitable 2 — `192.168.79.130` |
+| Attacker Machine | Kali Linux 2026.1, `192.168.79.129` |
+| Target Machine | Metasploitable 2, `192.168.79.130` |
 | Network Type | Host-Only (isolated, no internet exposure) |
-| Host OS | Windows 11 — ASUS Vivobook 14 |
+| Host OS | Windows 11, ASUS Vivobook 14 |
 
-> ⚠️ **Note:** All activity was performed in a controlled, isolated lab environment against deliberately vulnerable machines. No unauthorized access to live networks was performed.
+> ⚠️ **Note:** All activity was performed in a controlled, isolated lab environment against a deliberately vulnerable machine. No unauthorized access to live networks was performed.
 
 ---
 
 ## 🛠️ Tools Used
 
-- **Nmap** — Scans a target to discover hosts, services, and open or closed ports.
-- **Metasploitable** — Acts as a target machine with many intentional vulnerabilities to practice penetration testing, ethical hacking, and securely auditing safely.
-
----
-
-## 📁 Repository Structure
-
-```
-CySA-Plus-Lab-Portfolio/
-├── README.md                                   # Portfolio overview and index
-│
-├── recon-network-discovery/
-│   ├── nmap-host-discovery-lab-baseline.md
-│   ├── nmap-scan-types-syn-tcp-udp.md
-│   ├── service-version-os-fingerprinting.md
-│   ├── wireshark-capture-and-analysis.md
-│   ├── tcpdump-cli-packet-capture.md
-│   ├── nmap-scripting-engine-nse.md
-│   └── recon-assessment-report.md
-│
-├── vulnerability-scanning-exploitation/
-│   ├── openvas-vulnerability-scan.md
-│   ├── scan-results-cvss-scoring.md
-│   ├── nikto-web-application-scanning.md
-│   ├── metasploit-first-exploitation.md
-│   ├── post-exploitation-enumeration.md
-│   ├── mitre-attack-kill-chain-mapping.md
-│   └── full-vulnerability-assessment.md
-│
-├── siem-log-analysis-incident-response/
-│   ├── splunk-install-and-log-ingestion.md
-│   ├── spl-splunk-search-language.md
-│   ├── attack-generation-and-detection.md
-│   ├── elk-stack-components.md
-│   ├── incident-response-simulation-nist.md
-│   ├── snort-ids-detection-rules.md
-│   └── incident-response-report.md
-│
-├── scenarios-and-analyst-skills/
-│   ├── full-kill-chain-red-and-blue-team.md
-│   ├── vulnerability-management-deep-review.md
-│   ├── cloud-security-aws-concepts.md
-│   ├── zero-trust-architecture-identity.md
-│   └── soar-soc-workflow-alert-triage.md
-│
-└── Reports
-    └── [final-report.md]  # Full assessment report
-```
+- **Nmap**: Used to perform host discovery, port scanning, and save scan output to a file for later reference
+- **Metasploitable 2**: Intentionally vulnerable Linux target machine used as the subject of all scanning activity
 
 ---
 
 ## 🔬 Tasks / Assessments Performed
 
-### 1. Find all live hosts on the subnet using Ping Sweep
+### 1. Find all live hosts on the subnet using a ping sweep
 
-ping sweep to find all live hosts on my subnet to document which hosts are live so we can identify later any unidentifiable live hosts that I must look into.)
+Before scanning any specific target, I needed to know what was alive on the network. A ping sweep sends ICMP requests across the entire subnet and reports back which IP addresses responded, essentially asking "which devices on this network are on right now?"
 
 ```bash
-# Commands used
-
 sudo nmap -n --disable-arp-ping -sP 192.168.79.0/24
 ```
+
 <img width="321" height="105" alt="image" src="https://github.com/user-attachments/assets/7a155223-f0bf-4037-ba05-c3272166fd92" />
 
-*-sP is what makes it considered a ping sweep*
+**Finding:**
 
-# Output
-Command identified 3 live hosts on the subnet:
-192.168.79.1 - Gateway/Router for the host-only network(VMwares virtual DHCP server).
-192.168.79.130 - The metasploitable 2 target (Target)
-192.168.79.129 - Kali (Attacker)
+The scan found 3 live hosts on the subnet:
+- `192.168.79.1`: the gateway/virtual DHCP server (VMware's virtual router for the host-only network)
+- `192.168.79.129`: Kali Linux (the attacker machine)
+- `192.168.79.130`: Metasploitable 2 (the target)
 
-**Finding:** 
-I discovered there are 3 live hosts on this network the Gateway, Metasplotable (target), and Kali VM (ATTACKER).
-A ping sweep is essentially asking devices on the network "Which devices on this network are alive?"
-A live host is any active device with an IP address that is powered on, connected and capable of responding to network requests.
+This kind of host inventory matters in a real engagement because any unrecognized live host needs to be investigated. In this lab, all three were expected, but the habit of documenting what's on the network before you start touching anything is foundational to a clean assessment.
+
 ---
 
-### 2. Running a fast Nmap scan against Metasploitable
-Used Nmap to scan the IP for metasploitable and displays the open ports.
+### 2. Run a fast Nmap scan against Metasploitable
+
+With the target confirmed at 192.168.79.130, I ran a fast scan to get a quick view of which ports were open. The `-F` flag limits the scan to the 100 most commonly used ports rather than all 65,535, which makes it useful for rapid triage.
 
 ```bash
-# Commands used
 sudo nmap -n --disable-arp-ping -F 192.168.79.130
+```
 
 <img width="307" height="227" alt="Screenshot 2026-07-14 214935" src="https://github.com/user-attachments/assets/27126024-60cd-4c86-a06c-a2dbeb0be8e3" />
 
-```
+**Finding:**
 
-**Finding:** 
+The scan identified 18 open TCP ports on Metasploitable. 82 ports came back closed. That alone tells a story, a legitimate server typically has a handful of ports open for specific services. Eighteen open ports on a single host is a significant attack surface.
 
-I found that 18 Ports are open in Metasploitable VM. I could also see that 82 ports are closed.
--F indicates user wants a fast scan (scan of the 1oo most common ports instead of a full 65,535 range of ports.)
--sT scans and displays only TCP ports.
--sU scans and displays only UDP ports. (UDP is much slower.)
-TCP Is connection oriented(Uses handshake, confirms, delivery, and resends any lost data. (More reliable but slower than TCP.Used with Web browsing, SSH, email and other services that prioritize security and relaibilty over speed.)
-UDP is connectionless and fires packets out without handshake or data being confirmed.(Faster but less reliable than TCP. Used with DNS lookups, streaming, and VoIP, where speed matters more than guaranteed delivery.)
+At this stage the scan only tells me which ports are open and what service name Nmap guesses from the port number. What's actually running on each port, and whether it's vulnerable, is what the rest of the week's labs work through.
+
 ---
 
-### 3. Save output to a file for refernce
-Saved Nmap Scan output to a file for reference.
+### 3. Save scan output to a file for reference
+
+Rather than just printing the results to the screen and moving on, I saved the scan output to a file. This is standard practice in any real assessment, you need a record of what the network looked like before you started making changes, running exploits, or generating alerts.
 
 ```bash
-# Commands used
-
 sudo nmap -n --disable-arp-ping -F 192.168.79.130 -oN ~/baseline.txt
+```
 
 <img width="384" height="243" alt="Screenshot 2026-07-14 225433" src="https://github.com/user-attachments/assets/d5793cb6-11d2-4d44-bff5-3e2e8952b201" />
 
 <img width="319" height="229" alt="Screenshot 2026-07-14 225148" src="https://github.com/user-attachments/assets/7c1fda63-f0bc-4457-98de-ac3815e59271" />
 
-```
+**Finding:**
 
-**Findings:** 
--oN indicates Normal output format, saves to disk instead of just printing to the termianal.
-The command to display the file that was created: cat ~/baseline.txt
-~/ : indicates a shortcut to save to the home directory.
+The `-oN` flag saves the output in normal (human-readable) format. The `~/` prefix saves it to the home directory, which keeps it in a predictable location rather than wherever the terminal happens to be open. To view it later: `cat ~/baseline.txt`.
+
+This file became the reference point for all subsequent scans. When later labs uncovered additional ports or services, I was able to compare them against this baseline to see what had and hadn't been captured in the initial fast scan.
 
 ---
 
@@ -153,33 +101,16 @@ The command to display the file that was created: cat ~/baseline.txt
 
 | Port/Service | Tool Used | Risk Level | Notes |
 |---|---|---|---|
-
-| Port 21/tcp FTP | Nmap | 🔴 Critical | etasploitable runs vsftpd 2.3.4, which has a wellknown backdoor vulnerability(CVE-2011-2523) which gives an attacker a root shell. |
-
-| Port 23/tcp Telnet] | Nmap | 🔴 Critical | Sends credentials and traffic in plain text with no encryption at all.
-
-| Port 445/tcp SMB | Nmap | 🔴 Critical | MB has a long history of critical exploits (e.g., EternalBlue-class vulnerabilities). Also enables enumeration of shaMres, users, and sometimes anonymous login. |
-
-|  Port 139/tcp Netbios | Nmap | 🔴 Critical | often paired with SMB issues, allows enumeration of system/network info. |
-
-| Port 5900/tcp VNC | Nmap | 🔴 Critical | remote desktop access; Metasploitable's VNC is famously configured with a weak/no password, giving full GUI control. |
-
-| Port 80/tcp HTTP | Nikto | 🟠 High | [Notes??????] |
-
-| Port 3306/tcp MySQL & PostgreSQL | Nmap | 🟠 High | databases exposed to the network; Metasploitable's are set up with weak or default credentials, risking data exposure or command execution. |
-
-| Port 2049/tcp NFS | Nmap | 🟠 High | misconfigured NFS shares can allow unauthorized file access.
-
-| Port 111/rpcbind | Nmap | 🟠 High | rpcbind exposes RPC services that assist in enumeration/attacks.
-
-| Port 25/tcp SMTP | Nmap | 🟡 Medium | can allow email relay abuse or reveal system info via banner grabbing. |
-
-| Port 80/tcp HTTP | Nmap | 🟡 Medium | Metasploitable's web apps (DVWA, Mutillidae, etc.) are intentionally full of vulnerabilities (SQLi, XSS, command injection.) |
-
-**To enumerate is to systematically query a target system or network to extract detailed, valuable information**
-What is SMB, Netbios, VNC, NFS, rpcbind ??
-
-**Good writeup structure: for each port, note the service, the specific known CVE if there is one, and the real-world remediation (patch version, disable service, enforce auth, segment network). That CVE-2011-2523 FTP backdoor is probably your strongest example to lead with — it's a textbook case and easy to explain clearly in an interview.**
+| 21/tcp FTP | Nmap | 🔴 Critical | Metasploitable runs vsftpd 2.3.4, a version with a documented backdoor vulnerability (CVE-2011-2523) that allows a remote attacker to gain a root shell |
+| 23/tcp Telnet | Nmap | 🔴 Critical | Transmits all data including credentials in plaintext with no encryption |
+| 445/tcp SMB | Nmap | 🔴 Critical | SMB has a long history of critical vulnerabilities; also allows enumeration of shares, users, and sometimes anonymous login |
+| 139/tcp NetBIOS | Nmap | 🔴 Critical | Often paired with SMB issues; allows enumeration of system and network information |
+| 5900/tcp VNC | Nmap | 🔴 Critical | Remote desktop protocol; Metasploitable's VNC instance uses a weak or absent password, giving full GUI-level access |
+| 80/tcp HTTP | Nmap | 🟡 Medium | Metasploitable hosts several intentionally vulnerable web applications (DVWA, Mutillidae, etc.), further analyzed in the Wireshark lab |
+| 3306/tcp MySQL | Nmap | 🟠 High | Database exposed directly on the network; Metasploitable's MySQL is configured with weak default credentials |
+| 2049/tcp NFS | Nmap | 🟠 High | Misconfigured NFS shares can allow unauthorized file access |
+| 111/tcp rpcbind | Nmap | 🟠 High | Exposes RPC service information, assisting attacker enumeration |
+| 25/tcp SMTP | Nmap | 🟡 Medium | Can allow email relay abuse or reveal system information via banner grabbing |
 
 **Risk Levels:** 🔴 Critical | 🟠 High | 🟡 Medium | 🟢 Low
 
@@ -189,7 +120,7 @@ What is SMB, Netbios, VNC, NFS, rpcbind ??
 
 | Action Performed | ATT&CK Tactic | Technique ID | Technique Name |
 |---|---|---|---|
-| Ping sweep to discover live hosts | Reconnaissance | T1595.001 | Scanning IP Blocks |
+| Ping sweep to identify live hosts | Reconnaissance | T1595.001 | Scanning IP Blocks |
 | Fast port scan of Metasploitable | Reconnaissance | T1046 | Network Service Discovery |
 | Saving scan output for later reference | Collection | T1005 | Data from Local System |
 
@@ -199,51 +130,53 @@ What is SMB, Netbios, VNC, NFS, rpcbind ??
 
 Based on findings, the following remediations would be recommended in a real environment:
 
-1. **Metasplotable has many vulnerable ports open.** — [Recommendation]
+1. **vsftpd 2.3.4 backdoor (Critical)**: Upgrade or replace immediately. This version contains a known, publicly documented backdoor (CVE-2011-2523) that should never run in any environment.
+2. **Telnet enabled (Critical)**: Disable Telnet and replace with SSH for all remote administration. Telnet transmits credentials and session data in plaintext.
+3. **SMB/NetBIOS exposed (Critical)**: Disable SMB and NetBIOS if not required. Where SMB is needed, restrict access via firewall rules and enforce message signing.
+4. **VNC with weak or no authentication (Critical)**: Disable VNC or enforce strong authentication. Tunnel VNC access through SSH or VPN.
+5. **Databases exposed to the network (High)**: MySQL and other database services should never be directly accessible on a network interface. Bind to localhost only and enforce strong credentials.
 
-1. **vsftpd 2.3.4 backdoor (Critical)** — Upgrade or replace immediately; this version contains a known, publicly documented backdoor (CVE-2011-2523).
-2. **Telnet enabled (Critical)** — Disable Telnet and replace with SSH for all remote administration.
-3. **SMB/NetBIOS exposed with weak configuration (Critical)** — Disable SMB/NetBIOS if not required, or restrict access via host-based firewall rules; enforce message signing where SMB is necessary.
-4. **VNC with weak/no authentication (Critical)** — Disable VNC or enforce strong authentication and tunnel access through SSH/VPN.
-5. **Databases (MySQL/PostgreSQL) exposed to the network (High)** — Restrict database access to localhost or an internal-only network segment; enforce strong credentials.
 ---
-
 
 ## 🔑 Technical Notes
 
-# Ping sweep to find all live hosts on the subnet
+```bash
+# Find all live hosts on the subnet (ping sweep)
 sudo nmap -n --disable-arp-ping -sP 192.168.79.0/24
 
-# Fast scan (top 100 ports) against a specific target
+# Fast scan, top 100 TCP ports against a specific target
 sudo nmap -n --disable-arp-ping -F 192.168.79.130
 
-# Save scan output to a file for later reference
+# Fast scan with output saved to a file for later reference
 sudo nmap -n --disable-arp-ping -F 192.168.79.130 -oN ~/baseline.txt
 
 # View a saved scan output file
 cat ~/baseline.txt
 
 # Note: ~/ is a shortcut for the home directory (e.g. /home/kali).
-# Omitting it saves the file to whatever directory you're currently in
-# instead of a predictable, consistent location.
->
-> **"Always add the -n flag to Nmap scans in this VMware environment to prevent DNS resolution hangs."]**
-> 
-> **-sP and -sT contradict eachother (Can't be used together because -sP means just do a ping/host-discovery sweep, skip ports entirely but -sT tells Nmap to do a full TCP connect port scan. These commands contradict eachother.)**
+# Saving output here keeps it in a consistent, predictable location
+# rather than wherever the terminal happens to be open.
 
+# VMware lab note: always add -n to Nmap scans in this environment.
+# DNS resolution hangs indefinitely on the isolated host-only network
+# since there is no real DNS server to answer queries.
+```
 
 ---
 
 ## 📌 About This Project
 
-This repository is the starting point of my broader cybersecurity portfolio — establishing the foundational reconnaissance and host discovery skills that every later assessment (service detection, vulnerability scanning, packet analysis, and exploitation) builds on.
+This repository is the starting point of a broader reconnaissance portfolio. The baseline established here (3 live hosts, 18 open ports, scan output saved to file) is the foundation every later lab builds on.
 
-**Related repositories:**
-- `Nmap-Scan-Types-SYN-vs-TCP-vs-UDP` — Compared SYN, TCP connect, and UDP scan types against the ports identified as open in this baseline
-- `Service-Version-Detection-and-OS-Fingerprinting` — Identified exact software versions on the ports found open here, and researched real CVEs tied to them
-- `Nmap-Scripting-Engine` — Used NSE scripts to detect and, in one case, actively exploit the vsftpd vulnerability first identified in this repository
-- `Wireshark-Capture-and-Analyze-Traffic` — Captured and analyzed live traffic against the same target established here
-- `TCPDump-CLI-Packet-Capture` — Captured command-line packet traffic, including a live Telnet session on a port identified as open in this baseline
+The six repositories that follow this one pick up where the port list ends: comparing how different scan types find (or miss) those ports, identifying the exact software versions running on them, capturing what's moving across the wire, and ultimately confirming that one of those services had a critical backdoor that could be exploited for root access.
+
+**Related repositories (in order):**
+
+- `Nmap-Scan-Types-SYN-vs-TCP-vs-UDP`: Compared SYN, TCP connect, and UDP scan types against the 18 ports identified here, examining speed, stealth, and completeness tradeoffs
+- `Service-Version-Detection-and-OS-Fingerprinting`: Identified exact software versions running on the open ports, then researched real CVEs tied to those specific versions
+- `Wireshark-Capture-and-Analyze-Traffic`: Captured and analyzed live traffic against the same target, including plaintext credential exposure via HTTP
+- `TCPDump-CLI-Packet-Capture`: Demonstrated command-line packet capture, including a live Telnet session revealing plaintext data in ASCII
+- `Nmap-Scripting-Engine`: Used NSE scripts to confirm and actively exploit the vsftpd vulnerability first identified in this baseline, resulting in a confirmed root shell
 
 ---
 
@@ -252,8 +185,8 @@ This repository is the starting point of my broader cybersecurity portfolio — 
 **Dashane James**  
 Senior Field Service Technician → Cybersecurity Analyst  
 📍 Yonkers, NY  
-🎓 B.S. Information Technology — SUNY Canton  
-🏆 CompTIA Security+ | CySA+ (In Progress)  
+🎓 B.S. Information Technology, SUNY Canton  
+🏆 CompTIA Security+  
 🔗 [GitHub](https://github.com/Dashanejames1) | [Zero Trust Cyber Security Brand](https://www.instagram.com/zerotrust_cybersecurity)
 
 ---
