@@ -122,7 +122,6 @@ This file became the reference point for all subsequent scans. When later labs u
 |---|---|---|---|
 | Ping sweep to identify live hosts | Reconnaissance | T1595.001 | Scanning IP Blocks |
 | Fast port scan of Metasploitable | Reconnaissance | T1046 | Network Service Discovery |
-| Saving scan output for later reference | Collection | T1005 | Data from Local System |
 
 ---
 
